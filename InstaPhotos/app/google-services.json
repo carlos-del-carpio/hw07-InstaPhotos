@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "719143417989",
+    "project_id": "hw07-instaphotos",
+    "storage_bucket": "hw07-instaphotos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:719143417989:android:d6ef46f0898c86c09491ec",
+        "android_client_info": {
+          "package_name": "com.example.instaphotos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "719143417989-qnr3o1lhbp1ths36mkqpdgdkfp8kcgh4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi4_eIBU6NA5wbcoNnABlIwcCqzeprjl4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "719143417989-qnr3o1lhbp1ths36mkqpdgdkfp8kcgh4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
