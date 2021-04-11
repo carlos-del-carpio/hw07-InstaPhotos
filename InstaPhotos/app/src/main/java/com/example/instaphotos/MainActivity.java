@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 
-public class MainActivity extends AppCompatActivity implements Login.LoginListener {
+public class MainActivity extends AppCompatActivity implements Login.LoginListener,
+                                                               CreateNewAccount.CreateNewAccountListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,10 +19,12 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
                                    .commit();
     }
 
+
     @Override
     public void loginButtonClicked() {
         Log.d("Carlos", "loginButtonClicked: about to go to the main page");
     }
+
 
     @Override
     public void createNewAccountButtonClicked() {
@@ -29,5 +32,17 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
                                    .addToBackStack(null)
                                    .replace(R.id.container, new CreateNewAccount())
                                    .commit();
+    }
+
+
+    @Override
+    public void userCanceledAccountCreation() {
+        getSupportFragmentManager().popBackStack();
+    }
+
+
+    @Override
+    public void userSubmittedNewAccount() {
+
     }
 }
