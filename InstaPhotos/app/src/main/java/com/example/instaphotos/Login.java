@@ -2,19 +2,17 @@ package com.example.instaphotos;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class Login extends Fragment {
     final String TAG = "Carlos";
+    LoginListener loginListener;
     FirebaseAuth mAuth;
     EditText email;
     EditText password;
@@ -55,7 +54,7 @@ public class Login extends Fragment {
                              @Override
                              public void onComplete(@NonNull Task<AuthResult> task) {
                                  if (task.isSuccessful()) {
-                                     Log.d(TAG, "onComplete: submitted");
+                                     loginListener.loginButtonClicked();
                                  } else {
                                      createAlertDialog(getString(R.string.invalid_login), task.getException().getMessage());
                                  }
@@ -66,7 +65,27 @@ public class Login extends Fragment {
         });
 
 
+        createNewAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginListener.createNewAccountButtonClicked();
+            }
+        });
+
+
         return view;
+    }
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof LoginListener) {
+            loginListener = (LoginListener)context;
+        } else {
+            throw new RuntimeException(context.toString());
+        }
     }
 
 
@@ -100,5 +119,11 @@ public class Login extends Fragment {
                 });
 
         builder.create().show();
+    }
+
+
+    public interface LoginListener {
+        void loginButtonClicked();
+        void createNewAccountButtonClicked();
     }
 }
