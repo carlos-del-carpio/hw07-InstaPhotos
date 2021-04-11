@@ -3,11 +3,11 @@ package com.example.instaphotos;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity implements Login.LoginListener,
-                                                               CreateNewAccount.CreateNewAccountListener {
+                                                               CreateNewAccount.CreateNewAccountListener,
+                                                               Timeline.TimelineListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
 
     @Override
     public void loginButtonClicked() {
-        Log.d("Carlos", "loginButtonClicked: about to go to the main page");
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.container, new Timeline())
+                                   .commit();
     }
 
 
@@ -43,6 +45,16 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
 
     @Override
     public void userSubmittedNewAccount() {
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.container, new Timeline())
+                                   .commit();
+    }
 
+
+    @Override
+    public void userLoggedOut() {
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.container, new Login())
+                                   .commit();
     }
 }

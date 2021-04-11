@@ -103,7 +103,7 @@ public class CreateNewAccount extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
-                        Log.d(TAG, "onComplete: finished adding user");
+                        createNewAccountListener.userSubmittedNewAccount();
                     }
                 });
     }
