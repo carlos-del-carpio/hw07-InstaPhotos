@@ -10,4 +10,7 @@
     <string name="empty_email">Empty Email</string>
     <string name="empty_password">Empty Password</string>
     <string name="missing_fields">Missing Fields</string>
+    <string name="name">Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit">Submit</string>
 </resources>
