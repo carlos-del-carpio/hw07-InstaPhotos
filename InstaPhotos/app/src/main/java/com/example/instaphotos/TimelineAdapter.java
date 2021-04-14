@@ -2,6 +2,7 @@ package com.example.instaphotos;
 
 
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
     public void onBindViewHolder(@NonNull TimelineAdapter.TimelineViewHolder holder, int position) {
         Post post = posts.get(position);
         holder.postID = post.getPostID();
+        holder.userID = post.getUserID();
         holder.dateCreated.setText(post.getDateCreated());
         holder.downloadPicture(post.getPostID());
         holder.getCommentCount();
@@ -84,6 +86,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         TextView likesCount;
         TextView commentsCount;
         String postID;
+        String userID;
         int likeStatus;
 
         public TimelineViewHolder(@NonNull View itemView, TimelineActionListener timelineActionListener) {
@@ -110,6 +113,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                 @Override
                 public void onClick(View v) {
                     toggleLike(likeStatus);
+                }
+            });
+
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timelineActionListener.postSelected(userID, postID);
                 }
             });
         }
@@ -180,10 +191,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         void toggleLike(int likeStatus) {
             if (likeStatus == 0) {
-                removeLike(postID);
+                addLike(postID);
                 this.likeStatus = 1;
             } else if (likeStatus == 1) {
-                addLike(postID);
+                removeLike(postID);
                 this.likeStatus = 0;
             }
         }
@@ -231,5 +242,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
     public interface TimelineActionListener {
         void deleteCurrentPost(String postID);
+        void postSelected(String creatorID, String postID);
     }
 }

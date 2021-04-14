@@ -68,6 +68,16 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
                                    .commit();
     }
 
+
+    @Override
+    public void userSelectedPost(String creatorID, String postID) {
+        getSupportFragmentManager().beginTransaction()
+                                   .addToBackStack(null)
+                                   .replace(R.id.container, new PostWithComments(creatorID, postID))
+                                   .commit();
+    }
+
+
     @Override
     public void friendSelected(Friend friend) {
         getSupportFragmentManager().beginTransaction()

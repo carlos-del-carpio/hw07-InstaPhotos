@@ -14,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:contentDescription="post image"
+        android:contentDescription="imagePost"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"

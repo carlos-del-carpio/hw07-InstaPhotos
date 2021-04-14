@@ -182,10 +182,10 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
 
         void toggleLike(int likeStatus) {
             if (likeStatus == 0) {
-                removeLike(postID);
+                addLike(postID);
                 this.likeStatus = 1;
             } else if (likeStatus == 1) {
-                addLike(postID);
+                removeLike(postID);
                 this.likeStatus = 0;
             }
         }

@@ -240,8 +240,15 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
     }
 
 
+    @Override
+    public void postSelected(String creatorID, String postID) {
+        timelineListener.userSelectedPost(creatorID, postID);
+    }
+
+
     public interface TimelineListener {
         void userLoggedOut();
         void userClickedFriends();
+        void userSelectedPost(String creatorID, String postID);
     }
 }
