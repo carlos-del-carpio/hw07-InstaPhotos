@@ -95,14 +95,12 @@ public class CreateNewAccount extends Fragment {
 
         user.put("name", name);
         user.put("email", email);
-        user.put("userID", userID);
 
 
-        database.collection("users")
-                .add(user)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+        database.collection("users").document(mAuth.getUid()).set(user)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                    public void onComplete(@NonNull Task<Void> task) {
                         createNewAccountListener.userSubmittedNewAccount();
                     }
                 });

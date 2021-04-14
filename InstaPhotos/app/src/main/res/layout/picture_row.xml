@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imagePost"
         android:layout_width="375dp"
         android:layout_height="375dp"
         android:layout_marginStart="16dp"
@@ -14,6 +14,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:contentDescription="post image"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,29 +29,23 @@
         android:orientation="horizontal"
         android:weightSum="7"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
+        app:layout_constraintEnd_toEndOf="@+id/imagePost"
+        app:layout_constraintStart_toStartOf="@+id/imagePost"
+        app:layout_constraintTop_toBottomOf="@+id/imagePost">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/outputDateCreated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:text="TextView" />
+            android:layout_weight="6" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/buttonDelete"
             android:layout_width="0sp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            tools:srcCompat="@drawable/like_favorite" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="0sp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:contentDescription="delete button"
+            app:srcCompat="@drawable/rubbish_bin"
             tools:srcCompat="@drawable/rubbish_bin" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

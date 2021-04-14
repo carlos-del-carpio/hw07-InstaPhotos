@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,19 +16,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
-
 import static android.app.Activity.RESULT_OK;
 
 
-public class Timeline extends Fragment {
+public class Timeline extends Fragment implements TimelineAdapter.TimelineActionListener {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     final String TAG = "Carlos";
     static final int REQUEST_IMAGE_GET = 714;
@@ -37,6 +48,9 @@ public class Timeline extends Fragment {
     Button add;
     RecyclerView recycler;
     LinearLayoutManager linearLayoutManager;
+    TimelineAdapter adapter;
+    ArrayList<Post> posts = new ArrayList<>();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
 
     public Timeline() {}
@@ -52,13 +66,17 @@ public class Timeline extends Fragment {
         friends = view.findViewById(R.id.buttonFriends);
         add = view.findViewById(R.id.buttonAdd);
         recycler = view.findViewById(R.id.recyclerUserPhotos);
+        linearLayoutManager = new LinearLayoutManager(getContext());
         recycler.setLayoutManager(linearLayoutManager);
+        adapter = new TimelineAdapter(posts, this);
+
+
+        getProfileImages();
 
 
         friends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
             }
         });
 
@@ -66,7 +84,6 @@ public class Timeline extends Fragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: ");
                 getPictureFromCameraRoll();
             }
         });
@@ -86,51 +103,16 @@ public class Timeline extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult: got back to activity");
-        Log.d(TAG, "onActivityResult: " + requestCode);
-        Log.d(TAG, "onActivityResult: " + resultCode);
-        Log.d(TAG, "onActivityResult: " + data.toString());
-        if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK) {
-            Log.d(TAG, "onActivityResult: ");
-            if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK && data.getData() != null) {
-                Log.d(TAG, "onActivityResult: we got data");
-                Uri selectedImage = data.getData();
-                uploadImage(selectedImage);
-            }
+        if (requestCode == REQUEST_IMAGE_GET && resultCode == RESULT_OK && data.getData() != null) {
+            Uri selectedImage = data.getData();
+            uploadImage(selectedImage);
         }
     }
-
-
-    void uploadImage(Uri image) {
-        final String randomID = UUID.randomUUID().toString();
-        String uploadPath = FirebaseAuth.getInstance().getUid().toString() + "/" + randomID;
-        Log.d(TAG, "uploadImage: " + uploadPath);
-        StorageReference storageRef = storage.getReference();
-        StorageReference riversRef = storageRef.child(uploadPath);
-
-
-        riversRef.putFile(image).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG, "onSuccess: ");
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "image uploaded", Snackbar.LENGTH_LONG).show();
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "onFailure: ");
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "image failed to upload", Snackbar.LENGTH_LONG).show();
-            }
-        });
-    }
-
 
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
 
         if (context instanceof TimelineListener) {
             timelineListener = (TimelineListener)context;
@@ -140,16 +122,96 @@ public class Timeline extends Fragment {
     }
 
 
+    void uploadImage(Uri image) {
+        final String randomID = UUID.randomUUID().toString();
+        String uploadPath = FirebaseAuth.getInstance().getUid().toString() + "/" + randomID;
+        StorageReference storageRef = storage.getReference();
+        StorageReference riversRef = storageRef.child(uploadPath);
+
+
+        riversRef.putFile(image).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                addNewPost(randomID);
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "image uploaded", Snackbar.LENGTH_LONG).show();
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), "image failed to upload", Snackbar.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
     void getPictureFromCameraRoll() {
-        Log.d(TAG, "getPictureFromCameraRoll: ");
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, REQUEST_IMAGE_GET);
+    }
 
 
-//        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_IMAGE_GET);
-//        }
+    void getProfileImages(){
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+        database.collection("users")
+                .document(mAuth.getUid())
+                .collection("posts")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        posts.clear();
+
+
+                        for (DocumentSnapshot document : value) {
+                            posts.add(createNewPost(document));
+                        }
+                        adapter.notifyDataSetChanged();
+                        recycler.setAdapter(adapter);
+
+                    }
+                });
+    }
+
+
+    Post createNewPost(DocumentSnapshot document) {
+        String postID = document.get("postID").toString();
+        Date date = document.getDate("dateCreated");
+        
+        
+        Post post = new Post(postID, date);
+
+
+        return post;
+    }
+
+
+    void addNewPost(String postID) {
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        HashMap<String, Object> post = new HashMap<>();
+
+        post.put("postID", postID);
+        post.put("dateCreated", Timestamp.now());
+
+
+        database.collection("users")
+                .document(mAuth.getUid())
+                .collection("posts")
+                .document(postID)
+                .set(post)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d(TAG, "onComplete: post added");
+                    }
+                });
+    }
+
+    @Override
+    public void deleteCurrentPost() {
+        
     }
 
 
