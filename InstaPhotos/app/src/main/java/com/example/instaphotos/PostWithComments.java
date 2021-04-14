@@ -57,6 +57,7 @@ public class PostWithComments extends Fragment {
     ArrayList<String> likes;
     RecyclerView recycler;
     LinearLayoutManager linearLayoutManager;
+    CommentAdapter adapter;
     int likeStatus;
 
 
@@ -82,8 +83,11 @@ public class PostWithComments extends Fragment {
         commentInput = view.findViewById(R.id.commentInput);
         comments = new ArrayList<>();
         likes = new ArrayList<>();
-//        recycler = view.findViewById(R.id.postRecycler);
-//        linearLayoutManager = new LinearLayoutManager(getContext());
+        recycler = view.findViewById(R.id.postRecycler);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recycler.setLayoutManager(linearLayoutManager);
+        adapter = new CommentAdapter(comments);
+
 
         if (!creatorID.equals(FirebaseAuth.getInstance().getUid())) {
             deleteButton.setVisibility(View.INVISIBLE);
@@ -169,10 +173,15 @@ public class PostWithComments extends Fragment {
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        comments.clear();
+
+
                         for (DocumentSnapshot document : value) {
                             comments.add(createNewComment(document));
                         }
 
+                        adapter.notifyDataSetChanged();
+                        recycler.setAdapter(adapter);
                         commentsCounter.setText(comments.size() + " Comment(s)");
                     }
                 });
@@ -209,13 +218,14 @@ public class PostWithComments extends Fragment {
 
 
     Comment createNewComment(DocumentSnapshot document) {
+        String commentID = document.getId();
         String comment = document.get("comment").toString();
         String authorID = document.get("authorID").toString();
         String postID = document.get("postID").toString();
         Date date = document.getDate("commentDate");
 
 
-        Comment newComment = new Comment(comment, authorID, postID, date);
+        Comment newComment = new Comment(commentID, comment, authorID, postID, date);
 
 
         return newComment;

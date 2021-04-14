@@ -6,12 +6,14 @@ import java.util.TimeZone;
 
 public class Comment {
     public static final String DATE_FORMAT = "dd MMM yy HH:mm";
+    private String commentID;
     private String comment;
     private String authorID;
     private String postID;
     private Date commentDate;
 
-    Comment (String comment, String authorID, String postID, Date date) {
+    Comment (String commentID, String comment, String authorID, String postID, Date date) {
+        this.commentID = commentID;
         this.comment = comment;
         this.authorID = authorID;
         this.postID = postID;
@@ -29,6 +31,22 @@ public class Comment {
 
     public void setCommentDate(Date commentDate) {
         this.commentDate = commentDate;
+    }
+
+    public String getAuthorID() {
+        return authorID;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getPostID() {
+        return postID;
+    }
+
+    public String getCommentID() {
+        return commentID;
     }
 
     public String getDateCreated() {

@@ -150,8 +150,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                            commentCount = 0;
                             for (DocumentSnapshot document : value) {
-                                commentCount += 1;
+                                Log.d(TAG, "onEvent: " + document.toString());
+                                    commentCount += 1;
                             }
 
                             commentsCount.setText("Comment(s) " + commentCount);

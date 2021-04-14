@@ -232,6 +232,6 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
 
 
     public interface FriendTimelineActionListener {
-//        void deleteCurrentPost(String postID);
+        void deleteCurrentPost(String postID);
     }
 }
