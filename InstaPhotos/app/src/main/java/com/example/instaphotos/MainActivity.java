@@ -1,4 +1,4 @@
-/** 
+/**
   *
   */
 
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
                                    .commit();
     }
 
+    
     @Override
     public void userClickedFriends() {
         getSupportFragmentManager().beginTransaction()
