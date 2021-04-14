@@ -57,4 +57,9 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
                                    .replace(R.id.container, new Login())
                                    .commit();
     }
+
+    @Override
+    public void userClickedFriends() {
+
+    }
 }

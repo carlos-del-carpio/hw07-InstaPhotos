@@ -40,6 +40,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class Timeline extends Fragment implements TimelineAdapter.TimelineActionListener {
     FirebaseStorage storage = FirebaseStorage.getInstance();
+    FirebaseFirestore database = FirebaseFirestore.getInstance();
     final String TAG = "Carlos";
     static final int REQUEST_IMAGE_GET = 714;
     TimelineListener timelineListener;
@@ -77,6 +78,7 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
         friends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                timelineListener.userClickedFriends();
             }
         });
 
@@ -92,6 +94,7 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAuth.signOut();
                 timelineListener.userLoggedOut();
             }
         });
@@ -154,8 +157,6 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
 
 
     void getProfileImages(){
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
-
         database.collection("users")
                 .document(mAuth.getUid())
                 .collection("posts")
@@ -177,11 +178,12 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
 
 
     Post createNewPost(DocumentSnapshot document) {
+        String userID = document.get("userID").toString();
         String postID = document.get("postID").toString();
         Date date = document.getDate("dateCreated");
         
         
-        Post post = new Post(postID, date);
+        Post post = new Post(userID, postID, date);
 
 
         return post;
@@ -189,9 +191,9 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
 
 
     void addNewPost(String postID) {
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
         HashMap<String, Object> post = new HashMap<>();
 
+        post.put("userID", mAuth.getUid());
         post.put("postID", postID);
         post.put("dateCreated", Timestamp.now());
 
@@ -209,13 +211,37 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
                 });
     }
 
+
+    void deletePost(String postID) {
+        database.collection("users")
+                .document(mAuth.getUid())
+                .collection("posts")
+                .document(postID)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "onSuccess: post deleted too");
+                    }
+                });
+    }
+
+
     @Override
-    public void deleteCurrentPost() {
-        
+    public void deleteCurrentPost(String postID) {
+        StorageReference storageRef = storage.getReference();
+        StorageReference desertRef = storageRef.child(FirebaseAuth.getInstance().getUid() + "/" + postID);
+        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                deletePost(postID);
+            }
+        });
     }
 
 
     public interface TimelineListener {
         void userLoggedOut();
+        void userClickedFriends();
     }
 }

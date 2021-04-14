@@ -1,15 +1,21 @@
 package com.example.instaphotos;
 
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 
 public class Post {
+    public static final String DATE_FORMAT = "dd MMM yy HH:mm";
+    private String userID;
     private String postID;
     private Date dateCreated;
 
 
-    Post (String postID, Date date) {
+    Post (String userID, String postID, Date date) {
+        this.userID = userID;
         this.postID = postID;
         this.dateCreated = date;
     }
@@ -18,8 +24,19 @@ public class Post {
         return postID;
     }
 
-    public Date getDateCreated() {
-        return dateCreated;
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getDateCreated() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+        return dateFormat.format(dateCreated);
     }
 
     @Override
