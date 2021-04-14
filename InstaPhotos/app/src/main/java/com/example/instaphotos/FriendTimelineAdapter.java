@@ -1,4 +1,11 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
+
 
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -6,12 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,13 +29,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAdapter.FriendTimelineViewHolder>{
-    final String TAG = "Carlos";
-    FriendTimelineActionListener friendTimelineActionListener;
+    FriendTimelineAdapterListener friendTimelineAdapterListener;
     Friend friend;
     ArrayList<Post> posts;
     ArrayList<String> likes;
@@ -40,8 +44,8 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
     public FriendTimelineAdapter (ArrayList<Post> posts, Fragment fragment, Friend friend) {
         this.posts = posts;
         this.friend = friend;
-//        this.friendTimelineActionListener = (FriendTimelineActionListener) fragment;
         this.likes = new ArrayList<>();
+        this.friendTimelineAdapterListener = (FriendTimelineAdapterListener) fragment;
     }
 
 
@@ -49,7 +53,7 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
     @Override
     public FriendTimelineAdapter.FriendTimelineViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_row, parent, false);
-        FriendTimelineAdapter.FriendTimelineViewHolder friendTimelineViewHolder = new FriendTimelineAdapter.FriendTimelineViewHolder(view, friendTimelineActionListener);
+        FriendTimelineAdapter.FriendTimelineViewHolder friendTimelineViewHolder = new FriendTimelineAdapter.FriendTimelineViewHolder(view, friendTimelineAdapterListener);
 
 
         return friendTimelineViewHolder;
@@ -64,11 +68,6 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
         holder.downloadPicture(post.getPostID());
         holder.getCommentCount();
         holder.getLikesCount();
-
-
-        if (!post.getUserID().equals(FirebaseAuth.getInstance().getUid())) {
-            holder.deleteImage.setVisibility(View.INVISIBLE);
-        }
     }
 
 
@@ -82,37 +81,36 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         ImageView postImage;
         ImageView likeImage;
-        ImageView deleteImage;
         TextView dateCreated;
         TextView likesCount;
         TextView commentsCount;
         String postID;
         int likeStatus;
 
-        public FriendTimelineViewHolder(@NonNull View itemView, FriendTimelineActionListener friendTimelineActionListener) {
+
+        public FriendTimelineViewHolder(@NonNull View itemView, FriendTimelineAdapterListener friendTimelineAdapterListener) {
             super(itemView);
 
 
             postImage = itemView.findViewById(R.id.imagePost);
-            deleteImage = itemView.findViewById(R.id.buttonDelete);
             likeImage = itemView.findViewById(R.id.buttonLike);
             dateCreated = itemView.findViewById(R.id.outputDateCreated);
             likesCount = itemView.findViewById(R.id.outputNumberOfLikes);
             commentsCount = itemView.findViewById(R.id.outputNumbeOfComments);
 
 
-            deleteImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    friendTimelineActionListener.deleteCurrentPost(postID);
-                }
-            });
-
-
             likeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     toggleLike(likeStatus);
+                }
+            });
+
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    friendTimelineAdapterListener.friendPostSelected(friend.getUserID(), postID);
                 }
             });
         }
@@ -135,13 +133,16 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
 
         void getCommentCount() {
             database.collection("users")
-                    .document()
+                    .document(friend.getUserID())
                     .collection("posts")
                     .document(postID)
                     .collection("comments")
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                            commentCount = 0;
+
+
                             for (DocumentSnapshot document : value) {
                                 commentCount += 1;
                             }
@@ -162,11 +163,15 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                             likes.clear();
+
+
                             for (DocumentSnapshot document : value) {
                                 likes.add(document.get("userID").toString());
                             }
 
+
                             likesCount.setText("Like(s) " + likes.size());
+
 
                             if (likes.contains(FirebaseAuth.getInstance().getUid())) {
                                 likeImage.setImageResource(R.drawable.like_favorite);
@@ -193,6 +198,7 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
 
         void addLike(String postID) {
             HashMap<String, Object> userLiked = new HashMap<>();
+
 
             userLiked.put("userID", FirebaseAuth.getInstance().getUid());
 
@@ -231,7 +237,7 @@ public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAd
     }
 
 
-    public interface FriendTimelineActionListener {
-        void deleteCurrentPost(String postID);
+    public interface FriendTimelineAdapterListener {
+        void friendPostSelected(String authorID, String postID);
     }
 }

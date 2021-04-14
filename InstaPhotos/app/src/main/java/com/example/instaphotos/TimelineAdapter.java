@@ -1,8 +1,13 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
 
 
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +34,6 @@ import java.util.HashMap;
 
 
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder> {
-    final String TAG = "Carlos";
     TimelineActionListener timelineActionListener;
     ArrayList<Post> posts;
     ArrayList<String> likes;
@@ -88,6 +92,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         String postID;
         String userID;
         int likeStatus;
+
 
         public TimelineViewHolder(@NonNull View itemView, TimelineActionListener timelineActionListener) {
             super(itemView);
@@ -151,10 +156,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                             commentCount = 0;
+
+
                             for (DocumentSnapshot document : value) {
-                                Log.d(TAG, "onEvent: " + document.toString());
                                     commentCount += 1;
                             }
+
 
                             commentsCount.setText("Comment(s) " + commentCount);
                         }
@@ -172,9 +179,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                             likes.clear();
+
+
                             for (DocumentSnapshot document : value) {
                                 likes.add(document.get("userID").toString());
                             }
+
 
                             likesCount.setText("Like(s) " + likes.size());
 
@@ -204,6 +214,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         void addLike(String postID) {
             HashMap<String, Object> userLiked = new HashMap<>();
+
 
             userLiked.put("userID", FirebaseAuth.getInstance().getUid());
 

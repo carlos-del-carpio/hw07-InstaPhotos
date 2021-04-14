@@ -1,17 +1,21 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
+
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,7 +37,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,11 +44,9 @@ import java.util.HashMap;
 
 public class PostWithComments extends Fragment {
     FirebaseFirestore database = FirebaseFirestore.getInstance();
-    final String TAG = "Carlos";
     String postID;
     String creatorID;
     ImageView imagePost;
-    ImageView deleteButton;
     ImageView likeButton;
     Button postButton;
     TextView date;
@@ -74,7 +74,6 @@ public class PostWithComments extends Fragment {
 
 
         imagePost = view.findViewById(R.id.postImage);
-        deleteButton = view.findViewById(R.id.postDelete);
         likeButton = view.findViewById(R.id.postLike);
         postButton = view.findViewById(R.id.postButton);
         date = view.findViewById(R.id.postCreatedDate);
@@ -89,25 +88,13 @@ public class PostWithComments extends Fragment {
         adapter = new CommentAdapter(comments);
 
 
-        if (!creatorID.equals(FirebaseAuth.getInstance().getUid())) {
-            deleteButton.setVisibility(View.INVISIBLE);
-        }
-
-
         getAllData();
+
 
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toggleLike(likeStatus);
-            }
-        });
-
-
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
             }
         });
 
@@ -330,6 +317,7 @@ public class PostWithComments extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {}
                 });
+
 
         builder.create().show();
     }

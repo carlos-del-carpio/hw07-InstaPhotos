@@ -1,3 +1,9 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
 
 
@@ -20,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 
 public class Login extends Fragment {
-    final String TAG = "Carlos";
     LoginListener loginListener;
     FirebaseAuth mAuth;
     EditText email;
@@ -49,6 +54,7 @@ public class Login extends Fragment {
             public void onClick(View v) {
                 if (inputValidation()) {
                     mAuth = FirebaseAuth.getInstance();
+
 
                     mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                          .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -81,6 +87,7 @@ public class Login extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+
 
         if (context instanceof LoginListener) {
             loginListener = (LoginListener)context;

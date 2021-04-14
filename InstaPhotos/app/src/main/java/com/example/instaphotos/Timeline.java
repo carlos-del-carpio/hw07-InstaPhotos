@@ -1,3 +1,9 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
 
 
@@ -117,6 +123,7 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
+
         if (context instanceof TimelineListener) {
             timelineListener = (TimelineListener)context;
         } else {
@@ -169,9 +176,10 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
                         for (DocumentSnapshot document : value) {
                             posts.add(createNewPost(document));
                         }
+
+
                         adapter.notifyDataSetChanged();
                         recycler.setAdapter(adapter);
-
                     }
                 });
     }
@@ -192,6 +200,7 @@ public class Timeline extends Fragment implements TimelineAdapter.TimelineAction
 
     void addNewPost(String postID) {
         HashMap<String, Object> post = new HashMap<>();
+
 
         post.put("userID", mAuth.getUid());
         post.put("postID", postID);

@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:text="@string/post"
         app:layout_constraintBottom_toBottomOf="@+id/commentInput"
-        app:layout_constraintEnd_toEndOf="@+id/postDelete"
-        app:layout_constraintStart_toEndOf="@+id/commentInput" />
+        app:layout_constraintEnd_toEndOf="@+id/postImage" />
 
     <ImageView
         android:id="@+id/postImage"
@@ -36,7 +35,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/postLike"
+        app:layout_constraintEnd_toStartOf="@+id/postButton"
         app:layout_constraintStart_toStartOf="@+id/postImage"
         app:layout_constraintTop_toBottomOf="@+id/postImage" />
 
@@ -57,28 +56,15 @@
         app:layout_constraintTop_toBottomOf="@+id/postLikeCount" />
 
     <ImageView
-        android:id="@+id/postDelete"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:src="@drawable/rubbish_bin"
-        app:layout_constraintBottom_toBottomOf="@+id/postCommentCount"
+        android:id="@+id/postLike"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/like_not_favorite"
+        app:layout_constraintBottom_toTopOf="@+id/postButton"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="@+id/postImage"
+        app:layout_constraintStart_toEndOf="@+id/postCreatedDate"
         app:layout_constraintTop_toBottomOf="@+id/postImage" />
-
-    <ImageView
-        android:id="@+id/postLike"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:src="@drawable/like_not_favorite"
-        app:layout_constraintBottom_toBottomOf="@+id/postDelete"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/postDelete"
-        app:layout_constraintTop_toTopOf="@+id/postDelete" />
 
     <EditText
         android:id="@+id/commentInput"

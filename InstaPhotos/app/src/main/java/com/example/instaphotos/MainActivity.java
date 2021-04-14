@@ -1,6 +1,7 @@
-/**
-  *
-  */
+/**Assignment: HW07
+  *File name: HW07
+  *Student: Carlos Del Carpio
+*/
 
 
 package com.example.instaphotos;
@@ -13,7 +14,8 @@ import android.os.Bundle;
 public class MainActivity extends AppCompatActivity implements Login.LoginListener,
                                                                CreateNewAccount.CreateNewAccountListener,
                                                                Timeline.TimelineListener,
-                                                               Friends.FriendListener {
+                                                               Friends.FriendListener,
+                                                               FriendTimeline.FriendTimelineListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
 
     @Override
     public void userSubmittedNewAccount() {
+        getSupportFragmentManager().popBackStack();
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.container, new Timeline())
                                    .commit();
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
                                    .commit();
     }
 
-    
+
     @Override
     public void userClickedFriends() {
         getSupportFragmentManager().beginTransaction()
@@ -88,6 +91,15 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
         getSupportFragmentManager().beginTransaction()
                                    .addToBackStack(null)
                                    .replace(R.id.container, new FriendTimeline(friend))
+                                   .commit();
+    }
+
+
+    @Override
+    public void getPostWithComments(String authorID, String postID) {
+        getSupportFragmentManager().beginTransaction()
+                                   .addToBackStack(null)
+                                   .replace(R.id.container, new PostWithComments(authorID, postID))
                                    .commit();
     }
 }

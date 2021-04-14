@@ -1,3 +1,9 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
 
 
@@ -7,7 +13,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +28,6 @@ import java.util.HashMap;
 
 
 public class CreateNewAccount extends Fragment {
-    final String TAG = "Carlos";
     CreateNewAccountListener createNewAccountListener;
     FirebaseAuth mAuth;
     EditText name;
@@ -78,6 +82,7 @@ public class CreateNewAccount extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
+
         if (context instanceof CreateNewAccountListener) {
             createNewAccountListener = (CreateNewAccountListener) context;
         } else {
@@ -95,7 +100,9 @@ public class CreateNewAccount extends Fragment {
         user.put("email", email);
 
 
-        database.collection("users").document(mAuth.getUid()).set(user)
+        database.collection("users")
+                .document(mAuth.getUid())
+                .set(user)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -117,7 +124,6 @@ public class CreateNewAccount extends Fragment {
                         }
                     }
                 });
-
     }
 
 
@@ -148,11 +154,11 @@ public class CreateNewAccount extends Fragment {
     void createAlertDialog(String alertTitle, String alertMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(alertTitle)
-                .setMessage(alertMessage)
-                .setPositiveButton(getString(R.string.back), new DialogInterface.OnClickListener() {
+               .setMessage(alertMessage)
+               .setPositiveButton(getString(R.string.back), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {}
-                });
+               });
 
         builder.create().show();
     }

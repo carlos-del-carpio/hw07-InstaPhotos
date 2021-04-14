@@ -1,4 +1,11 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
+
 
 public class Friend {
     String name;

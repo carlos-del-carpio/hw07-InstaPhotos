@@ -1,8 +1,15 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
 
 
+import android.content.Context;
 import android.os.Bundle;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,26 +17,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 import java.util.ArrayList;
 import java.util.Date;
 
 
-public class FriendTimeline extends Fragment {
-    FirebaseStorage storage = FirebaseStorage.getInstance();
+public class FriendTimeline extends Fragment implements FriendTimelineAdapter.FriendTimelineAdapterListener {
     FirebaseFirestore database = FirebaseFirestore.getInstance();
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FriendTimelineListener friendTimelineListener;
     Friend friend;
     RecyclerView recycler;
     LinearLayoutManager linearLayoutManager;
     FriendTimelineAdapter adapter;
     ArrayList<Post> posts = new ArrayList<>();
+
 
     public FriendTimeline(Friend friend) {
         this.friend = friend;
@@ -55,6 +60,18 @@ public class FriendTimeline extends Fragment {
     }
 
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+
+        if (context instanceof FriendTimelineListener) {
+            friendTimelineListener = (FriendTimelineListener)context;
+        } else {
+            throw new RuntimeException(context.toString());
+        }
+    }
+
     void getProfileImages(){
         database.collection("users")
                 .document(friend.getUserID())
@@ -68,6 +85,7 @@ public class FriendTimeline extends Fragment {
                         for (DocumentSnapshot document : value) {
                             posts.add(createNewPost(document));
                         }
+
 
                         adapter.notifyDataSetChanged();
                         recycler.setAdapter(adapter);
@@ -86,5 +104,15 @@ public class FriendTimeline extends Fragment {
 
 
         return post;
+    }
+
+    @Override
+    public void friendPostSelected(String authorID, String postID) {
+        friendTimelineListener.getPostWithComments(authorID, postID);
+    }
+
+
+    public interface FriendTimelineListener {
+        void getPostWithComments(String authorID, String postID);
     }
 }

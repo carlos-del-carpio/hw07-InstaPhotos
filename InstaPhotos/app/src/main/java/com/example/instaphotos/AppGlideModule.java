@@ -1,4 +1,11 @@
+/**Assignment: HW07
+ *File name: HW07
+ *Student: Carlos Del Carpio
+ */
+
+
 package com.example.instaphotos;
+
 
 import android.content.Context;
 import com.bumptech.glide.Glide;
@@ -9,9 +16,9 @@ import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.firebase.storage.StorageReference;
 import java.io.InputStream;
 
+
 @GlideModule
 class MyAppGlideModule extends AppGlideModule {
-
     @Override
     public void registerComponents(Context context, Glide glide, Registry registry) {
         // Register FirebaseImageLoader to handle StorageReference
