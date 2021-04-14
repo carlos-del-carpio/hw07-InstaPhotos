@@ -1,16 +1,17 @@
 package com.example.instaphotos;
 
-
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,38 +24,40 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TimelineViewHolder> {
+public class FriendTimelineAdapter extends RecyclerView.Adapter<FriendTimelineAdapter.FriendTimelineViewHolder>{
     final String TAG = "Carlos";
-    TimelineActionListener timelineActionListener;
+    FriendTimelineActionListener friendTimelineActionListener;
+    Friend friend;
     ArrayList<Post> posts;
     ArrayList<String> likes;
     int commentCount;
 
 
-    public TimelineAdapter (ArrayList<Post> posts, Fragment fragment) {
+    public FriendTimelineAdapter (ArrayList<Post> posts, Fragment fragment, Friend friend) {
         this.posts = posts;
-        this.timelineActionListener = (TimelineActionListener)fragment;
+        this.friend = friend;
+//        this.friendTimelineActionListener = (FriendTimelineActionListener) fragment;
         this.likes = new ArrayList<>();
     }
 
 
     @NonNull
     @Override
-    public TimelineAdapter.TimelineViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FriendTimelineAdapter.FriendTimelineViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_row, parent, false);
-        TimelineViewHolder timelineViewHolder = new TimelineViewHolder(view, timelineActionListener);
+        FriendTimelineAdapter.FriendTimelineViewHolder friendTimelineViewHolder = new FriendTimelineAdapter.FriendTimelineViewHolder(view, friendTimelineActionListener);
 
 
-        return timelineViewHolder;
+        return friendTimelineViewHolder;
     }
 
 
     @Override
-    public void onBindViewHolder(@NonNull TimelineAdapter.TimelineViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FriendTimelineAdapter.FriendTimelineViewHolder holder, int position) {
         Post post = posts.get(position);
         holder.postID = post.getPostID();
         holder.dateCreated.setText(post.getDateCreated());
@@ -75,7 +78,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
     }
 
 
-    public class TimelineViewHolder extends RecyclerView.ViewHolder {
+    public class FriendTimelineViewHolder extends RecyclerView.ViewHolder {
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         ImageView postImage;
         ImageView likeImage;
@@ -86,7 +89,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         String postID;
         int likeStatus;
 
-        public TimelineViewHolder(@NonNull View itemView, TimelineActionListener timelineActionListener) {
+        public FriendTimelineViewHolder(@NonNull View itemView, FriendTimelineActionListener friendTimelineActionListener) {
             super(itemView);
 
 
@@ -101,7 +104,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
             deleteImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    timelineActionListener.deleteCurrentPost(postID);
+//                    friendTimelineActionListener.deleteCurrentPost(postID);
                 }
             });
 
@@ -118,7 +121,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
         void downloadPicture(String postID) {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference()
-                                                 .child(FirebaseAuth.getInstance().getUid() + "/" + postID);
+                                                 .child(friend.getUserID() + "/" + postID);
 
 
             storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -132,7 +135,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         void getCommentCount() {
             database.collection("users")
-                    .document(FirebaseAuth.getInstance().getUid())
+                    .document()
                     .collection("posts")
                     .document(postID)
                     .collection("comments")
@@ -151,7 +154,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         void getLikesCount() {
             database.collection("users")
-                    .document(FirebaseAuth.getInstance().getUid())
+                    .document(friend.getUserID())
                     .collection("posts")
                     .document(postID)
                     .collection("likes")
@@ -164,7 +167,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
                             }
 
                             likesCount.setText("Like(s) " + likes.size());
-
 
                             if (likes.contains(FirebaseAuth.getInstance().getUid())) {
                                 likeImage.setImageResource(R.drawable.like_favorite);
@@ -196,7 +198,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
 
             database.collection("users")
-                    .document(FirebaseAuth.getInstance().getUid())
+                    .document(friend.getUserID())
                     .collection("posts")
                     .document(postID)
                     .collection("likes")
@@ -213,7 +215,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
 
         void removeLike(String postID) {
             database.collection("users")
-                    .document(FirebaseAuth.getInstance().getUid())
+                    .document(friend.getUserID())
                     .collection("posts")
                     .document(postID)
                     .collection("likes")
@@ -229,7 +231,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.Timeli
     }
 
 
-    public interface TimelineActionListener {
-        void deleteCurrentPost(String postID);
+    public interface FriendTimelineActionListener {
+//        void deleteCurrentPost(String postID);
     }
 }

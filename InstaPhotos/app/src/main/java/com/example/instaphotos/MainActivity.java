@@ -69,7 +69,10 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
     }
 
     @Override
-    public void friendSelected(String userID) {
-        Log.d("Carlos", "friendSelected: " + userID);
+    public void friendSelected(Friend friend) {
+        getSupportFragmentManager().beginTransaction()
+                                   .addToBackStack(null)
+                                   .replace(R.id.container, new FriendTimeline(friend))
+                                   .commit();
     }
 }

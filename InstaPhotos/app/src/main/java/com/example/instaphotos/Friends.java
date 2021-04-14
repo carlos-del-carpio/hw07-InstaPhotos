@@ -56,7 +56,7 @@ public class Friends extends Fragment {
         friends.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                friendListener.friendSelected(friendsList.get(position).getUserID());
+                friendListener.friendSelected(friendsList.get(position));
             }
         });
 
@@ -102,6 +102,6 @@ public class Friends extends Fragment {
 
 
     public interface FriendListener {
-        void friendSelected(String userID);
+        void friendSelected(Friend friend);
     }
 }
