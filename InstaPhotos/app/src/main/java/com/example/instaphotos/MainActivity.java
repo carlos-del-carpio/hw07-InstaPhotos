@@ -3,11 +3,13 @@ package com.example.instaphotos;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity implements Login.LoginListener,
                                                                CreateNewAccount.CreateNewAccountListener,
-                                                               Timeline.TimelineListener {
+                                                               Timeline.TimelineListener,
+                                                               Friends.FriendListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,14 @@ public class MainActivity extends AppCompatActivity implements Login.LoginListen
 
     @Override
     public void userClickedFriends() {
+        getSupportFragmentManager().beginTransaction()
+                                   .addToBackStack(null)
+                                   .replace(R.id.container, new Friends())
+                                   .commit();
+    }
 
+    @Override
+    public void friendSelected(String userID) {
+        Log.d("Carlos", "friendSelected: " + userID);
     }
 }
